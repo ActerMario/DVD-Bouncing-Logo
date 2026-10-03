@@ -95,3 +95,8 @@ Haz clic derecho sobre `DVD.scr` y selecciona **Instalar**. Se abrirá directame
 ## 📄 Licencia
 
 Este proyecto es de código abierto y está disponible bajo la licencia [MIT](LICENSE).
+
+<img width="1919" height="1079" alt="Captura de pantalla 2026-10-03 214811" src="https://github.com/user-attachments/assets/6d70f1aa-19ec-43f9-89f5-8c01c29c34bd" />
+<img width="1919" height="1079" alt="Captura de pantalla 2026-10-03 214816" src="https://github.com/user-attachments/assets/aa673bae-766e-4b5f-b045-1882b1a11160" />
+<img width="464" height="511" alt="Captura de pantalla 2026-10-03 214834" src="https://github.com/user-attachments/assets/7e9c72a1-21e1-4b47-929b-482949c2dd40" />
+<img width="350" height="515" alt="Captura de pantalla 2026-10-03 215207" src="https://github.com/user-attachments/assets/8c84f6ca-cdd5-48d0-a5e4-5fd58c80151c" />
