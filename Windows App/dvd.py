@@ -9,8 +9,8 @@ def ruta(nombre):
     return os.path.join(base, nombre)
 
 # --- Config ---
-IMAGEN = ruta("dvd.png")   # tu imagen, en la misma carpeta que este script
-ALTO_LOGO = 120      # altura del logo en pixeles
+IMAGEN = ruta("dvd.png")
+ALTO_LOGO = 120
 VELOCIDAD = 4
 
 COLORES = [(255, 75, 75), (75, 255, 75), (75, 155, 255), (255, 255, 75),
@@ -22,19 +22,14 @@ escala = ALTO_LOGO / base.height
 base = base.resize((int(base.width * escala), ALTO_LOGO), Image.LANCZOS)
 
 pixeles = list(base.getdata())
-
-# Color de la esquina = fondo de referencia
 br, bg_, bb, ba = pixeles[0]
 fondo_transparente = ba < 10
 
-# Mascara: el logo = todo lo que NO sea el fondo
 mascara = []
 for r, g, b, a in pixeles:
     if fondo_transparente:
-        # el fondo es transparente -> el logo son los pixeles opacos
         mascara.append(255 if a > 10 else 0)
     else:
-        # el fondo es un color solido -> el logo es lo que difiere de el
         if a < 10 or (abs(r - br) < 60 and abs(g - bg_) < 60 and abs(b - bb) < 60):
             mascara.append(0)
         else:
@@ -66,29 +61,45 @@ def al_redimensionar(e):
     W, H = e.width, e.height
 canvas.bind("<Configure>", al_redimensionar)
 
-img_actual = logo_coloreado((255, 255, 255))   # empieza en blanco
-logo = canvas.create_image(100, 100, anchor="nw", image=img_actual)
 lw, lh = base.size
-dx = dy = VELOCIDAD
+logos = []   # cada logo: {"id", "img", "dx", "dy"}
 
-def cambiar_color():
-    global img_actual
-    img_actual = logo_coloreado(random.choice(COLORES))
-    canvas.itemconfig(logo, image=img_actual)
+def crear_logo(x, y, color=None):
+    if color is None:
+        color = random.choice(COLORES)
+    img = logo_coloreado(color)
+    item = canvas.create_image(x, y, anchor="nw", image=img)
+    dx = VELOCIDAD * random.choice([-1, 1])
+    dy = VELOCIDAD * random.choice([-1, 1])
+    logo = {"id": item, "img": img, "dx": dx, "dy": dy}
+    logos.append(logo)
+    # al clicar este logo, sale otro
+    canvas.tag_bind(item, "<Button-1>", lambda e: al_clicar(x))
+    return logo
+
+def al_clicar(_=None):
+    # nuevo logo en posicion aleatoria dentro de la ventana
+    x = random.randint(0, max(1, W - lw))
+    y = random.randint(0, max(1, H - lh))
+    crear_logo(x, y)
+
+# logo inicial en blanco
+primero = crear_logo(100, 100, (255, 255, 255))
 
 def mover():
-    global dx, dy
-    canvas.move(logo, dx, dy)
-    x, y = canvas.coords(logo)
-    toca = False
-    if x <= 0 or x + lw >= W:
-        dx = -dx
-        toca = True
-    if y <= 0 or y + lh >= H:
-        dy = -dy
-        toca = True
-    if toca:
-        cambiar_color()
+    for lg in logos:
+        canvas.move(lg["id"], lg["dx"], lg["dy"])
+        x, y = canvas.coords(lg["id"])
+        toca = False
+        if x <= 0 or x + lw >= W:
+            lg["dx"] = -lg["dx"]
+            toca = True
+        if y <= 0 or y + lh >= H:
+            lg["dy"] = -lg["dy"]
+            toca = True
+        if toca:
+            lg["img"] = logo_coloreado(random.choice(COLORES))
+            canvas.itemconfig(lg["id"], image=lg["img"])
     root.after(16, mover)
 
 mover()
